@@ -40,96 +40,72 @@ MUL: '*';
 ASSIGNMENT_OPERATOR: ':=';
 
 
+
 // Copyright to Temoeri Sjamojani
 
-// Requirement "Beperkingen". Please see ASSIGNMENT.md. Limit the property selection to these options.
-COLOR_PROP: 'color';
-BGC_PROP: 'background-color';
-WIDTH_PROP: 'width';
-HEIGHT_PROP: 'height';
+// ONLY SUPPORTING DECLERATIONS
+BACKGROUDN_COLOR_DECLERATION: 'background-color';
+COLOR_DECLERATION: 'color';
+WIDTH_DECLERATION: 'width';
+HEIGHT_DECLERATION: 'height';
+
 
 //--- PARSER: ---
-stylesheet: statement*;
+stylesheet: (variableAssignment | stylerule)*;
 
-// Available statements. Seperated so we can use * next to the variable.
-statement
-    : selectorStatement
-    | variableStatement
-    | expressionStatement
+variableAssignment
+    : variableReference
+      ASSIGNMENT_OPERATOR
+      (
+        variableReference
+        | boolLiteral
+        | colorLiteral
+        | pixelLiteral
+      )
     ;
 
-//// ========== Selectors ==========
-
-// Support if[var]
-expressionStatement: baseIfStructure expressionProperties ELSE expressionProperties;
-
-// Support <option> { key: val; }
-selectorStatement: selectorAssignmentOptions OPEN_BRACE properties* CLOSE_BRACE;
-
-// Syntax to support MyVar := TRUE;
-variableStatement: variableAssimentOption variableProperties SEMICOLON;
-
-//// ========== Property structures  ==========
-
-expressionProperties: properties | baseIfStructure;
-
-
-// TODO: Find out why properties don't work when you use specific prefix like background-color: x;
-// Support the following elements to be set as a property
-properties: colorSchemeOptions | ratioOptions;
-
-// Variable options support both custom options and base options.
-variableProperties: baseCustomVariableOptions | baseColorSchemeOptions | baseRatioOptions | operatorCalculationRules;
-
-// Supports calculation with variable elements
-operatorCalculationRules
-    : percentageCalculateionRule
-    | pixelCalculateionRule
-    | variableCalculateionRule
-    | allowMultiplyPixelCalculationRule
-    | allowMultiplyPercentageCalculationRule
-    | allowMultiplyVariableCalculationRule
+stylerule
+    : selector
+      declaration COLON (colorLiteral | pixelLiteral) SEMICOLON *
+      CLOSE_BRACE
     ;
 
-//// ========== Options ==========
-selectorAssignmentOptions: ID_IDENT | CLASS_IDENT | LOWER_IDENT;
+selector
+    : (tagSelector | idSelector | classSelector) OPEN_BRACE
+    ;
 
-variableAssimentOption: CAPITAL_IDENT ASSIGNMENT_OPERATOR;
+variableReference
+    : CAPITAL_IDENT
+    ;
 
-// TODO: Figure out why colorSchemeOptions & ratioOptions don't work with _PROP lexer elements but do work with LOWER_IDENT.
-// Color/Background-color support structure
-colorSchemeOptions: (BGC_PROP | COLOR_PROP) COLON (baseColorSchemeOptions | CAPITAL_IDENT) SEMICOLON;
+boolLiteral
+    : TRUE
+    | FALSE
+    ;
 
-// Width/height support to accept pixel sizes or percentages only.
-ratioOptions: (HEIGHT_PROP | WIDTH_PROP) COLON (baseRatioOptions | CAPITAL_IDENT | operatorCalculationRules) SEMICOLON;
+declaration
+    : BACKGROUDN_COLOR_DECLERATION
+    | COLOR_DECLERATION
+    | WIDTH_DECLERATION
+    | HEIGHT_DECLERATION
+    ;
 
-// Variable options have more but since they are covered by the baseOptions, we only add the "different" values.
-baseCustomVariableOptions: TRUE | FALSE;
+tagSelector
+    : LOWER_IDENT
+    ;
 
-// If we support more color schemes add here (example rgb etc)
-baseColorSchemeOptions: COLOR;
+idSelector
+    : ID_IDENT
+    ;
 
-// if we support more width/height options add them here.
-baseRatioOptions: (PIXELSIZE | PERCENTAGE);
+classSelector
+    : CLASS_IDENT
+    ;
 
-// Support following structure: if[MyVar]
-baseIfStructure: IF BOX_BRACKET_OPEN CAPITAL_IDENT BOX_BRACKET_CLOSE;
+colorLiteral
+    : COLOR
+    ;
 
-//// ========== Requirement CH02 & https://github.com/michelportier/icss2021/blob/master/ASSIGNMENT.md#berekende-waardes ==========
-
-// Accepts (N)% +/- (N)%
-percentageCalculateionRule: PERCENTAGE baseEqualTypeOperator PERCENTAGE;
-// Accepts (n)px +/- (n)px;
-pixelCalculateionRule: PIXELSIZE baseEqualTypeOperator PIXELSIZE;
-// Accepts var +/- var;
-variableCalculateionRule: CAPITAL_IDENT baseEqualTypeOperator CAPITAL_IDENT;
-
-// Accepts (n)px * (n) OR (n) * (n)px.
-allowMultiplyPixelCalculationRule: PIXELSIZE MUL SCALAR  | SCALAR MUL PIXELSIZE;
-// Accepts (n)% * (n) OR (n) * (n)%.
-allowMultiplyPercentageCalculationRule: PERCENTAGE MUL SCALAR  | SCALAR MUL PERCENTAGE;
-// Allowe var * (n) OR (n) * VAR
-allowMultiplyVariableCalculationRule:  CAPITAL_IDENT MUL SCALAR | SCALAR MUL CAPITAL_IDENT;
-
-// Simple collection of operator which need both sides to contain the same type.
-baseEqualTypeOperator: PLUS | MIN ;
+pixelLiteral
+    : PIXELSIZE
+    ;
