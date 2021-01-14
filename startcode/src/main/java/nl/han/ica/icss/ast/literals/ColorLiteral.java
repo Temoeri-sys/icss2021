@@ -28,4 +28,7 @@ public class ColorLiteral extends Literal {
 
         return Objects.hash(value);
     }
+
+    // Current version doesn't need to have any validation. The G4 solves the requirements. So skip for now.
+    public void validate(){}
 }

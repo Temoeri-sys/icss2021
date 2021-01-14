@@ -39,16 +39,7 @@ MIN: '-';
 MUL: '*';
 ASSIGNMENT_OPERATOR: ':=';
 
-
-
 // Copyright to Temoeri Sjamojani
-
-// ONLY SUPPORTING DECLERATIONS
-BACKGROUDN_COLOR_DECLERATION: 'background-color';
-COLOR_DECLERATION: 'color';
-WIDTH_DECLERATION: 'width';
-HEIGHT_DECLERATION: 'height';
-
 
 //--- PARSER: ---
 stylesheet: (variableAssignment | stylerule)*;
@@ -65,13 +56,10 @@ variableAssignment
     ;
 
 stylerule
-    : selector
-      declaration COLON (colorLiteral | pixelLiteral) SEMICOLON *
+    : (tagSelector | idSelector | classSelector)
+      OPEN_BRACE
+      declaration *
       CLOSE_BRACE
-    ;
-
-selector
-    : (tagSelector | idSelector | classSelector) OPEN_BRACE
     ;
 
 variableReference
@@ -84,10 +72,7 @@ boolLiteral
     ;
 
 declaration
-    : BACKGROUDN_COLOR_DECLERATION
-    | COLOR_DECLERATION
-    | WIDTH_DECLERATION
-    | HEIGHT_DECLERATION
+    : property COLON (colorLiteral | pixelLiteral) SEMICOLON
     ;
 
 tagSelector
@@ -108,4 +93,8 @@ colorLiteral
 
 pixelLiteral
     : PIXELSIZE
+    ;
+
+property
+    : LOWER_IDENT
     ;

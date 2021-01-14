@@ -29,7 +29,9 @@ public class TagSelector extends Selector {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(tag);
     }
+
+    // Current version doesn't need to have any validation. The G4 solves the requirements. So skip for now.
+    public void validate(){}
 }

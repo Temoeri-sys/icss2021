@@ -31,4 +31,9 @@ public class IdSelector extends Selector {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    // TODO: Finish validator.
+    public void validate(){
+
+    }
 }

@@ -13,6 +13,9 @@ import nl.han.ica.icss.lists.HANStack;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.checkerframework.checker.units.qual.C;
+
+import java.io.Console;
 
 /**
  * This class extracts the ICSS Abstract Syntax Tree from the Antlr Parse tree.
@@ -29,9 +32,6 @@ public class ASTListener extends ICSSBaseListener {
 		ast = new AST();
 		currentContainer = new HANStack<>();
 	}
-    public AST getAST() {
-        return ast;
-    }
 
 	@Override
 	public void enterStylesheet(ICSSParser.StylesheetContext ctx) {
@@ -41,9 +41,9 @@ public class ASTListener extends ICSSBaseListener {
 
 	@Override
 	public void exitStylesheet(ICSSParser.StylesheetContext ctx) {
-		Stylesheet element = (Stylesheet) currentContainer.pop();
-		currentContainer.peek().addChild(element);
+		ast.setRoot((Stylesheet) currentContainer.peek());
 		super.exitStylesheet(ctx);
+
 	}
 
 	@Override
@@ -70,21 +70,6 @@ public class ASTListener extends ICSSBaseListener {
 		Stylerule element = (Stylerule) currentContainer.pop();
 		currentContainer.peek().addChild(element);
 		super.exitStylerule(ctx);
-	}
-
-	// TODO: Check if this is ok. Maybe use PropertyName?
-	// Kind of annoying to have to guess someone else's interpretation of something...
-	@Override
-	public void enterSelector(ICSSParser.SelectorContext ctx) {
-		currentContainer.push(new Selector() {});
-		super.enterSelector(ctx);
-	}
-
-	@Override
-	public void exitSelector(ICSSParser.SelectorContext ctx) {
-		Selector element = (Selector) currentContainer.pop();
-		currentContainer.peek().addChild(element);
-		super.exitSelector(ctx);
 	}
 
 	@Override
@@ -200,36 +185,22 @@ public class ASTListener extends ICSSBaseListener {
 		super.exitPixelLiteral(ctx);
 	}
 
-	@Override
-	public void enterPercentageLiteral(ICSSParser.PercentageLiteralContext ctx) {
-		if(ctx.PERCENTAGE() != null )
-			currentContainer.push(new PercentageLiteral(ctx.PERCENTAGE().toString()));
-		super.enterPercentageLiteral(ctx);
+
+	@Override public void enterProperty(ICSSParser.PropertyContext ctx) {
+		if(ctx.LOWER_IDENT() != null)
+			currentContainer.push(new PropertyName(ctx.LOWER_IDENT().toString()));
+		super.enterProperty(ctx);
 	}
 
-	@Override
-	public void exitPercentageLiteral(ICSSParser.PercentageLiteralContext ctx) {
-		PercentageLiteral element = (PercentageLiteral) currentContainer.pop();
+	@Override public void exitProperty(ICSSParser.PropertyContext ctx) {
+		PropertyName element = (PropertyName) currentContainer.pop();
 		currentContainer.peek().addChild(element);
-		super.exitPercentageLiteral(ctx);
-	}
-
-	@Override
-	public void enterScalarLiteral(ICSSParser.ScalarLiteralContext ctx) {
-		if(ctx.SCALAR() != null )
-			currentContainer.push(new ScalarLiteral(ctx.SCALAR().toString()));
-		super.enterScalarLiteral(ctx);
-	}
-
-	@Override
-	public void exitScalarLiteral(ICSSParser.ScalarLiteralContext ctx) {
-		ScalarLiteral element = (ScalarLiteral) currentContainer.pop();
-		currentContainer.peek().addChild(element);
-		super.exitScalarLiteral(ctx);
+		super.enterProperty(ctx);
 	}
 
 	@Override
 	public void enterEveryRule(ParserRuleContext ctx) {
+		super.enterEveryRule(ctx);
 	}
 
 	@Override
@@ -246,4 +217,9 @@ public class ASTListener extends ICSSBaseListener {
 	public void visitErrorNode(ErrorNode node) {
 		super.visitErrorNode(node);
 	}
+
+	public AST getAST() {
+		return ast;
+	}
+
 }

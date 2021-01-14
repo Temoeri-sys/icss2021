@@ -4,15 +4,11 @@ import nl.han.ica.datastructures.IHANStack;
 
 import java.util.EmptyStackException;
 
-public class HANStack<O> implements IHANStack {
+public class HANStack<T> implements IHANStack {
     private Object _top;
     private HANStack<Object> _bottom;
 
     public HANStack(){}
-
-    public HANStack(Object value) {
-        this._top = value;
-    }
 
     public HANStack(Object value, HANStack<Object> child) {
         this._top = value;
@@ -31,6 +27,7 @@ public class HANStack<O> implements IHANStack {
         if(empty()){
             throw new EmptyStackException();
         }
+
         // Set new top and bind current values.
         Object newTop = this._top;
         this._top = this._bottom._top;
