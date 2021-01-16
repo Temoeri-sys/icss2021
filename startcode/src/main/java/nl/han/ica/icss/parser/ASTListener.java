@@ -73,6 +73,32 @@ public class ASTListener extends ICSSBaseListener {
     }
 
     @Override
+    public void enterIfClause(ICSSParser.IfClauseContext ctx) {
+        currentContainer.push(new IfClause());
+        super.enterIfClause(ctx);
+    }
+
+    @Override
+    public void exitIfClause(ICSSParser.IfClauseContext ctx) {
+        IfClause element = (IfClause) currentContainer.pop();
+        currentContainer.peek().addChild(element);
+        super.exitIfClause(ctx);
+    }
+
+    @Override
+    public void enterElseClause(ICSSParser.ElseClauseContext ctx) {
+        currentContainer.push(new ElseClause());
+        super.enterElseClause(ctx);
+    }
+
+    @Override
+    public void exitElseClause(ICSSParser.ElseClauseContext ctx) {
+        ElseClause element = (ElseClause) currentContainer.pop();
+        currentContainer.peek().addChild(element);
+        super.exitElseClause(ctx);
+    }
+
+    @Override
     public void enterVariableReference(ICSSParser.VariableReferenceContext ctx) {
         if (ctx.CAPITAL_IDENT() != null)
             currentContainer.push(new VariableReference(ctx.CAPITAL_IDENT().toString()));
@@ -113,6 +139,45 @@ public class ASTListener extends ICSSBaseListener {
         Declaration element = (Declaration) currentContainer.pop();
         currentContainer.peek().addChild(element);
         super.exitDeclaration(ctx);
+    }
+
+    @Override
+    public void enterAddOperation(ICSSParser.AddOperationContext ctx) {
+        currentContainer.push(new AddOperation());
+        super.enterAddOperation(ctx);
+    }
+
+    @Override
+    public void exitAddOperation(ICSSParser.AddOperationContext ctx) {
+        AddOperation element = (AddOperation) currentContainer.pop();
+        currentContainer.peek().addChild(element);
+        super.exitAddOperation(ctx);
+    }
+
+    @Override
+    public void enterSubtractOperation(ICSSParser.SubtractOperationContext ctx) {
+        currentContainer.push(new SubtractOperation());
+        super.enterSubtractOperation(ctx);
+    }
+
+    @Override
+    public void exitSubtractOperation(ICSSParser.SubtractOperationContext ctx) {
+        SubtractOperation element = (SubtractOperation) currentContainer.pop();
+        currentContainer.peek().addChild(element);
+        super.exitSubtractOperation(ctx);
+    }
+
+    @Override
+    public void enterMultiplyOperation(ICSSParser.MultiplyOperationContext ctx) {
+        currentContainer.push(new MultiplyOperation());
+        super.enterMultiplyOperation(ctx);
+    }
+
+    @Override
+    public void exitMultiplyOperation(ICSSParser.MultiplyOperationContext ctx) {
+        MultiplyOperation element = (MultiplyOperation) currentContainer.pop();
+        currentContainer.peek().addChild(element);
+        super.exitMultiplyOperation(ctx);
     }
 
     @Override
@@ -215,23 +280,17 @@ public class ASTListener extends ICSSBaseListener {
     }
 
     @Override
-    public void enterEveryRule(ParserRuleContext ctx) {
-        super.enterEveryRule(ctx);
+    public void enterScalarLiteral(ICSSParser.ScalarLiteralContext ctx) {
+        if (ctx.SCALAR() != null)
+            currentContainer.push(new ScalarLiteral(ctx.SCALAR().toString()));
+        super.enterScalarLiteral(ctx);
     }
 
     @Override
-    public void exitEveryRule(ParserRuleContext ctx) {
-        super.exitEveryRule(ctx);
-    }
-
-    @Override
-    public void visitTerminal(TerminalNode node) {
-        super.visitTerminal(node);
-    }
-
-    @Override
-    public void visitErrorNode(ErrorNode node) {
-        super.visitErrorNode(node);
+    public void exitScalarLiteral(ICSSParser.ScalarLiteralContext ctx) {
+        ScalarLiteral element = (ScalarLiteral) currentContainer.pop();
+        currentContainer.peek().addChild(element);
+        super.exitScalarLiteral(ctx);
     }
 
     public AST getAST() {

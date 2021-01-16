@@ -50,18 +50,113 @@ variableAssignment
       (
         variableReference
         | boolLiteral
+        | scalarLiteral
         | colorLiteral
         | pixelLiteral
         | percentageLiteral
-      )*
+        | addOperation
+        | subtractOperation
+        | multiplyOperation
+      )
       SEMICOLON
     ;
 
 stylerule
     : (tagSelector | idSelector | classSelector)
       OPEN_BRACE
-      declaration *
+      (declaration | ifClause)*
       CLOSE_BRACE
+    ;
+
+
+ifClause
+    : IF BOX_BRACKET_OPEN variableReference BOX_BRACKET_CLOSE OPEN_BRACE
+      (ifClause | declaration | elseClause)*
+      CLOSE_BRACE
+    ;
+
+elseClause
+    : CLOSE_BRACE ELSE OPEN_BRACE
+      declaration
+    ;
+
+declaration
+    : property
+      COLON
+      (
+        colorLiteral
+        | pixelLiteral
+        | percentageLiteral
+        | variableReference
+        | scalarLiteral
+        | addOperation
+        | subtractOperation
+        | multiplyOperation
+       )
+      SEMICOLON
+    ;
+
+addOperation
+    : (
+      	scalarLiteral
+      	| pixelLiteral
+      	| percentageLiteral
+      	| pixelLiteral
+      	| variableReference
+      )
+      PLUS
+      (
+          scalarLiteral
+          | pixelLiteral
+          | percentageLiteral
+          | pixelLiteral
+          | variableReference
+          | multiplyOperation
+          | subtractOperation
+          | addOperation
+      )
+    ;
+
+subtractOperation
+    : (
+      	scalarLiteral
+      	| pixelLiteral
+      	| percentageLiteral
+      	| pixelLiteral
+      	| variableReference
+      )
+      MUL
+      (
+          scalarLiteral
+          | pixelLiteral
+          | percentageLiteral
+          | pixelLiteral
+          | variableReference
+          | multiplyOperation
+          | subtractOperation
+          | addOperation
+      )
+    ;
+
+multiplyOperation
+    : (
+      	scalarLiteral
+      	| pixelLiteral
+      	| percentageLiteral
+      	| pixelLiteral
+      	| variableReference
+      )
+      MUL
+      (
+          scalarLiteral
+          | pixelLiteral
+          | percentageLiteral
+          | pixelLiteral
+          | variableReference
+          | multiplyOperation
+          | subtractOperation
+          | addOperation
+      )
     ;
 
 variableReference
@@ -71,10 +166,6 @@ variableReference
 boolLiteral
     : TRUE
     | FALSE
-    ;
-
-declaration
-    : property COLON (colorLiteral | pixelLiteral | percentageLiteral | variableReference) SEMICOLON
     ;
 
 tagSelector
@@ -103,4 +194,8 @@ percentageLiteral
 
 property
     : LOWER_IDENT
+    ;
+
+scalarLiteral
+    : SCALAR
     ;

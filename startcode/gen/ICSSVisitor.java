@@ -46,6 +46,36 @@ public interface ICSSVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDeclaration(ICSSParser.DeclarationContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ICSSParser#operation}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOperation(ICSSParser.OperationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpression(ICSSParser.ExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#addOperation}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAddOperation(ICSSParser.AddOperationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#subtractOperation}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubtractOperation(ICSSParser.SubtractOperationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#multiplyOperation}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMultiplyOperation(ICSSParser.MultiplyOperationContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ICSSParser#tagSelector}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -75,4 +105,22 @@ public interface ICSSVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitPixelLiteral(ICSSParser.PixelLiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#percentageLiteral}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPercentageLiteral(ICSSParser.PercentageLiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#property}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProperty(ICSSParser.PropertyContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ICSSParser#scalarLiteral}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitScalarLiteral(ICSSParser.ScalarLiteralContext ctx);
 }
