@@ -52,7 +52,9 @@ variableAssignment
         | boolLiteral
         | colorLiteral
         | pixelLiteral
-      )
+        | percentageLiteral
+      )*
+      SEMICOLON
     ;
 
 stylerule
@@ -72,7 +74,7 @@ boolLiteral
     ;
 
 declaration
-    : property COLON (colorLiteral | pixelLiteral) SEMICOLON
+    : property COLON (colorLiteral | pixelLiteral | percentageLiteral | variableReference) SEMICOLON
     ;
 
 tagSelector
@@ -93,6 +95,10 @@ colorLiteral
 
 pixelLiteral
     : PIXELSIZE
+    ;
+
+percentageLiteral
+    :  PERCENTAGE
     ;
 
 property

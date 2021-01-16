@@ -14,6 +14,7 @@ public class IdSelector extends Selector {
     public String getNodeLabel() {
         return "IdSelector " + id;
     }
+
     public String toString() {
         return id;
     }
@@ -30,10 +31,5 @@ public class IdSelector extends Selector {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    // TODO: Finish validator.
-    public void validate(){
-
     }
 }

@@ -14,6 +14,7 @@ public class TagSelector extends Selector {
     public String getNodeLabel() {
         return "TagSelector " + tag;
     }
+
     public String toString() {
         return tag;
     }
@@ -31,7 +32,4 @@ public class TagSelector extends Selector {
     public int hashCode() {
         return Objects.hash(tag);
     }
-
-    // Current version doesn't need to have any validation. The G4 solves the requirements. So skip for now.
-    public void validate(){}
 }

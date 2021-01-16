@@ -32,7 +32,4 @@ public class ClassSelector extends Selector {
     public int hashCode() {
         return Objects.hash(cls);
     }
-
-    // TODO: Finish validator.
-    public void validate(){}
 }
