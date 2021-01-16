@@ -23,8 +23,6 @@ public class EvalExpressions implements Transform {
     @Override
     public void apply(AST ast) {
         //variableValues = new HANLinkedList<>();
-
-        System.out.println(ast);
     }
 
     

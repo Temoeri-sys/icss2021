@@ -40,16 +40,15 @@ public class VariableReference extends Expression {
         }
 
         // Get the top level node to drill through the nested nodes to find it literal value
-        Optional<VariableAssignment> variableObject = availableVariables.stream()
+        Optional<VariableAssignment> node = availableVariables.stream()
                 .filter(o -> o.name.name.equals(variableName)).findFirst();
-        boolean variableInScope = variableObject.isPresent();
 
-        if (variableInScope) {
-            var nestedNodes = variableObject.get().getChildren();
+        if (node.isPresent()) {
+            var nestedNodes = node.get().getChildren();
             if (nestedNodes != null && nestedNodes.size() > 0) {
                 // Get the last element because that's the next property we need to evaluate.
                 var lastElement = nestedNodes.get(nestedNodes.size() - 1);
-                if(lastElement != null)
+                if(lastElement != null && declaration != null)
                     declaration.validate(lastElement, availableVariables);
             }
         } else {

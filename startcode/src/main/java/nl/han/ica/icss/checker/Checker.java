@@ -3,6 +3,9 @@ package nl.han.ica.icss.checker;
 import nl.han.ica.icss.ast.*;
 import nl.han.ica.icss.ast.ASTNode;
 import nl.han.ica.icss.ast.Declaration;
+import nl.han.ica.icss.ast.operations.AddOperation;
+import nl.han.ica.icss.ast.operations.MultiplyOperation;
+import nl.han.ica.icss.ast.operations.SubtractOperation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +38,7 @@ public class Checker {
     // Most of the validation is done by the G4 regex. These are some custom business rules that we can't cover with
     // the regex patterns and need to validate the structure.
     private void validateNode(ASTNode child) {
-        System.out.println(child);
+
         if (child instanceof VariableAssignment) {
             // If we receive a VariableAssigment add it to the list of the _availableVariables. This will mark that
             // the variable is accessible within the scope. By doing so, when another type is called, we'll have a list
@@ -45,6 +48,13 @@ public class Checker {
             _availableVariables.add(((VariableAssignment) child));
         } else if (child instanceof Declaration) {
             ((Declaration) child).validate(_availableVariables);
+        } else if (child instanceof AddOperation) {
+            child.SetErrorIfAny(((AddOperation) child).validate(_availableVariables));
+        } else if (child instanceof SubtractOperation) {
+            child.SetErrorIfAny(((SubtractOperation) child).validate(_availableVariables));
+        } else if (child instanceof MultiplyOperation) {
+            child.SetErrorIfAny(((MultiplyOperation) child).validate(_availableVariables));
         }
+
     }
 }
