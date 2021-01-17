@@ -18,7 +18,7 @@ public class SubtractOperation extends Operation {
         ASTNode lhsNode = getLiteralNode(lhs, availableVariables);
         ASTNode rhsNode = getLiteralNode(rhs, availableVariables);
 
-        if (lhsNode != null || rhsNode != null) {
+        if (lhsNode != null && rhsNode != null) {
             String lhsType = lhsNode.getClass().getSimpleName();
             String rhsType = rhsNode.getClass().getSimpleName();
 
@@ -39,7 +39,7 @@ public class SubtractOperation extends Operation {
         ASTNode lhsNode = getLiteralNode(lhs, availableVariables);
         ASTNode rhsNode = getLiteralNode(rhs, availableVariables);
 
-        if (lhsNode != null || rhsNode != null) {
+        if (lhsNode != null && rhsNode != null) {
             String lhsType = lhsNode.getClass().getSimpleName();
             String rhsType = rhsNode.getClass().getSimpleName();
 
@@ -53,37 +53,19 @@ public class SubtractOperation extends Operation {
                     setError("IncalculableValueError: Boolean is not a valid type.");
                     return null;
                 }
-                // Either Lhs or Rhs is a Scalar. Use it's value with the value of the node to recalculate the value
-                if (lhsNode instanceof PixelLiteral) {
-                    return recalculate(rhsNode, ((ScalarLiteral) rhsNode).value);
-                } else if (lhsNode instanceof PercentageLiteral) {
-                    return recalculate(rhsNode, ((ScalarLiteral) rhsNode).value);
-                }
-                if (rhsNode instanceof PixelLiteral) {
-                    return recalculate(rhsNode, ((ScalarLiteral) lhsNode).value);
-                } else if (rhsNode instanceof PercentageLiteral) {
-                    return recalculate(rhsNode, ((ScalarLiteral) lhsNode).value);
+                if (lhsNode instanceof PixelLiteral && rhsNode instanceof PixelLiteral) {
+                    return new PixelLiteral( Subtract( ((PixelLiteral) lhsNode).value, ((PixelLiteral) rhsNode).value ));
+                } else if (lhsNode instanceof PercentageLiteral && rhsNode instanceof PercentageLiteral) {
+                    return new PercentageLiteral( Subtract( ((PixelLiteral) lhsNode).value, ((PixelLiteral) rhsNode).value ));
+                } else {
+                    setError("TypeNotDefinedError: Could not recalculate value. Type is unknown.");
                 }
             }
-            setError("TypeMismatchError: The 'subtract' operation only support values of the same type.");
+            setError("TypeMismatchError: The 'add' operation only support values of the same type.");
         }
 
         // Yikes, something went wrong.
         return null;
-    }
-
-    private ASTNode recalculate(ASTNode node, int value) {
-        if (node instanceof PixelLiteral) {
-            var calculatedValue = Subtract(((PixelLiteral) node).value, value);
-            ((PixelLiteral) node).value = calculatedValue;
-            return node;
-        } else if (node instanceof PercentageLiteral) {
-            var calculatedValue = Subtract(((PercentageLiteral) node).value, value);
-            ((PercentageLiteral) node).value = calculatedValue;
-            return node;
-        }
-        setError("TypeNotDefinedError: Could not recalculate value. Type is unknown.");
-        return node;
     }
 
     private int Subtract(int a, int b) {

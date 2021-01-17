@@ -17,14 +17,14 @@ public class AddOperation extends Operation {
         ASTNode lhsNode = getLiteralNode(lhs, availableVariables);
         ASTNode rhsNode = getLiteralNode(rhs, availableVariables);
 
-        if (lhsNode != null || rhsNode != null) {
+        if (lhsNode != null && rhsNode != null) {
             String lhsType = lhsNode.getClass().getSimpleName();
             String rhsType = rhsNode.getClass().getSimpleName();
 
-            if(lhsType == rhsType){
-                if(lhsNode instanceof ColorLiteral || rhsNode instanceof ColorLiteral)
+            if (lhsType == rhsType) {
+                if (lhsNode instanceof ColorLiteral || rhsNode instanceof ColorLiteral)
                     return "IncalculableValueError: Color is not a valid type.";
-                if(lhsNode instanceof BoolLiteral || rhsNode instanceof BoolLiteral)
+                if (lhsNode instanceof BoolLiteral || rhsNode instanceof BoolLiteral)
                     return "IncalculableValueError: Boolean is not a valid type.";
                 return "";
             }
@@ -38,12 +38,12 @@ public class AddOperation extends Operation {
         ASTNode lhsNode = getLiteralNode(lhs, availableVariables);
         ASTNode rhsNode = getLiteralNode(rhs, availableVariables);
 
-        if (lhsNode != null || rhsNode != null) {
+        if (lhsNode != null && rhsNode != null) {
             String lhsType = lhsNode.getClass().getSimpleName();
             String rhsType = rhsNode.getClass().getSimpleName();
 
             // Make sure that the types are not the same. If that's the case it's valid (only requirement)
-            if(lhsType == rhsType){
+            if (lhsType == rhsType) {
                 if (lhsNode instanceof ColorLiteral || rhsNode instanceof ColorLiteral) {
                     setError("IncalculableValueError: Color is not a valid type.");
                     return null;
@@ -52,16 +52,12 @@ public class AddOperation extends Operation {
                     setError("IncalculableValueError: Boolean is not a valid type.");
                     return null;
                 }
-                // Either Lhs or Rhs is a Scalar. Use it's value with the value of the node to recalculate the value
-                if (lhsNode instanceof PixelLiteral){
-                    return recalculate(rhsNode, ((ScalarLiteral) rhsNode).value);
-                } else if (lhsNode instanceof PercentageLiteral){
-                    return recalculate(rhsNode, ((ScalarLiteral) rhsNode).value);
-                }
-                if (rhsNode instanceof PixelLiteral){
-                    return recalculate(rhsNode, ((ScalarLiteral) lhsNode).value);
-                } else if (rhsNode instanceof PercentageLiteral){
-                    return recalculate(rhsNode, ((ScalarLiteral) lhsNode).value);
+                if (lhsNode instanceof PixelLiteral && rhsNode instanceof PixelLiteral) {
+                    return new PixelLiteral(Add(((PixelLiteral) lhsNode).value, ((PixelLiteral) rhsNode).value));
+                } else if (lhsNode instanceof PercentageLiteral && rhsNode instanceof PercentageLiteral) {
+                    return new PercentageLiteral(Add(((PixelLiteral) lhsNode).value, ((PixelLiteral) rhsNode).value));
+                } else {
+                    setError("TypeNotDefinedError: Could not recalculate value. Type is unknown.");
                 }
             }
             setError("TypeMismatchError: The 'add' operation only support values of the same type.");
@@ -71,21 +67,7 @@ public class AddOperation extends Operation {
         return null;
     }
 
-    private ASTNode recalculate(ASTNode node, int value){
-        if (node instanceof PixelLiteral){
-            var calculatedValue = Add(((PixelLiteral) node).value, value);
-            ((PixelLiteral) node).value = calculatedValue;
-            return node;
-        } else if (node instanceof PercentageLiteral){
-            var calculatedValue = Add(((PercentageLiteral) node).value, value);
-            ((PercentageLiteral) node).value = calculatedValue;
-            return node;
-        }
-        setError("TypeNotDefinedError: Could not recalculate value. Type is unknown.");
-        return node;
-    }
-
-    private int Add(int a, int b){
+    private int Add(int a, int b) {
         return a + b;
     }
 }

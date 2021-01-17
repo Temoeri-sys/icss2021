@@ -52,7 +52,7 @@ public class ValidatorHelper {
                 _node.setError(errors);
             }
         } else if (expression instanceof PixelLiteral || expression instanceof PercentageLiteral
-                    || expression instanceof ScalarLiteral) {
+                || expression instanceof ScalarLiteral) {
             // Since Both types are the direct value we won't need to do additional validations.
             return expression;
         }

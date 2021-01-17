@@ -18,7 +18,7 @@ public class MultiplyOperation extends Operation {
         ASTNode lhsNode = getLiteralNode(lhs, availableVariables);
         ASTNode rhsNode = getLiteralNode(rhs, availableVariables);
 
-        if (lhsNode != null || rhsNode != null) {
+        if (lhsNode != null && rhsNode != null) {
             String lhsType = lhsNode.getClass().getSimpleName();
             String rhsType = rhsNode.getClass().getSimpleName();
 
@@ -42,7 +42,7 @@ public class MultiplyOperation extends Operation {
         ASTNode lhsNode = getLiteralNode(lhs, availableVariables);
         ASTNode rhsNode = getLiteralNode(rhs, availableVariables);
 
-        if (lhsNode != null || rhsNode != null) {
+        if (lhsNode != null && rhsNode != null) {
             String lhsType = lhsNode.getClass().getSimpleName();
             String rhsType = rhsNode.getClass().getSimpleName();
 
@@ -78,13 +78,9 @@ public class MultiplyOperation extends Operation {
 
     private ASTNode recalculate(ASTNode node, int value) {
         if (node instanceof PixelLiteral) {
-            var calculatedValue = Multiply(((PixelLiteral) node).value, value);
-            ((PixelLiteral) node).value = calculatedValue;
-            return node;
+            return new PixelLiteral(Multiply(((PixelLiteral) node).value, value));
         } else if (node instanceof PercentageLiteral) {
-            var calculatedValue = Multiply(((PercentageLiteral) node).value, value);
-            ((PercentageLiteral) node).value = calculatedValue;
-            return node;
+            return new PercentageLiteral(Multiply(((PercentageLiteral) node).value, value));
         }
         setError("TypeNotDefinedError: Could not recalculate value. Type is unknown.");
         return node;
