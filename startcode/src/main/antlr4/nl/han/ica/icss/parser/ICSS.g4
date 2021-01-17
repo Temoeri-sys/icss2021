@@ -125,7 +125,7 @@ subtractOperation
       	| pixelLiteral
       	| variableReference
       )
-      MUL
+      MIN
       (
           scalarLiteral
           | pixelLiteral

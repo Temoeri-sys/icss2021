@@ -57,12 +57,14 @@ public class MultiplyOperation extends Operation {
                     return null;
                 }
 
+
                 // Either Lhs or Rhs is a Scalar. Use it's value with the value of the node to recalculate the value
                 if (lhsNode instanceof PixelLiteral) {
-                    return recalculate(rhsNode, ((ScalarLiteral) rhsNode).value);
+                    return  recalculate(lhsNode, ((ScalarLiteral) rhsNode).value);
                 } else if (lhsNode instanceof PercentageLiteral) {
-                    return recalculate(rhsNode, ((ScalarLiteral) rhsNode).value);
+                    return recalculate(lhsNode, ((ScalarLiteral) rhsNode).value);
                 }
+
                 if (rhsNode instanceof PixelLiteral) {
                     return recalculate(rhsNode, ((ScalarLiteral) lhsNode).value);
                 } else if (rhsNode instanceof PercentageLiteral) {
