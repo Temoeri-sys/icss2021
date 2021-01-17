@@ -1,14 +1,10 @@
 package nl.han.ica.icss.transforms;
 
 import nl.han.ica.icss.ast.*;
-import nl.han.ica.icss.ast.literals.ColorLiteral;
-import nl.han.ica.icss.ast.operations.AddOperation;
-import nl.han.ica.icss.ast.operations.MultiplyOperation;
-import nl.han.ica.icss.ast.operations.SubtractOperation;
+import nl.han.ica.icss.ast.helpers.ValidatorHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class EvalExpressions implements Transform {
     // Since variables are only available within a specific scope, we'll use this to store them.
@@ -45,44 +41,8 @@ public class EvalExpressions implements Transform {
             _availableVariables.add(((VariableAssignment) node));
         } else if (node instanceof Declaration) {
             Expression expression = ((Declaration) node).expression;
-            ((Declaration) node).expression = (Expression) transformToLiteralNode(expression);
+            ((Declaration) node).expression = (Expression) new ValidatorHelper().transformToLiteralNode(expression, _availableVariables);
         }
-
     }
-
-    private ASTNode transformToLiteralNode(ASTNode expression) {
-        if (expression instanceof VariableReference) {
-            String variableName = ((VariableReference) expression).name;
-            // Make sure to validate the variable name
-            if (variableName != null && !variableName.trim().isEmpty()) {
-                // Get the top level node to drill through the nested nodes to find it literal value
-                Optional<VariableAssignment> node = _availableVariables.stream()
-                        .filter(o -> o.name.name.equals(variableName)).findFirst();
-
-                if (node.isPresent()) {
-                    var nestedNodes = node.get().getChildren();
-                    if (nestedNodes != null && nestedNodes.size() > 0) {
-                        // Get the last element because that's the next property we need to evaluate.
-                        var lastElement = nestedNodes.get(nestedNodes.size() - 1);
-                        // Send it back to the method in case we're dealing with a nested VariableReference (sigh)
-                        if (lastElement != null)
-                            return transformToLiteralNode(lastElement);
-                    }
-                }
-            }
-        } else if (expression instanceof AddOperation){
-            return ((AddOperation)expression).calculate(_availableVariables);
-        } else if (expression instanceof MultiplyOperation){
-            return ((MultiplyOperation)expression).calculate(_availableVariables);
-        } else if (expression instanceof SubtractOperation){
-            return ((SubtractOperation)expression).calculate(_availableVariables);
-        } else {
-            System.out.println(String.format("Unkown type? %s", expression));
-        }
-
-        // If the type is a literal just return it straight away. We don't need to do something special so.
-        return expression;
-    }
-
 
 }

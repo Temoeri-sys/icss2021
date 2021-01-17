@@ -17,11 +17,18 @@ import java.util.Optional;
 public class ValidatorHelper {
     private final ASTNode _node;
 
+    public ValidatorHelper() {
+        _node = null;
+    }
+
     public ValidatorHelper(ASTNode astNode) {
         _node = astNode;
     }
 
     public ASTNode getLiteralNode(Expression expression, List<VariableAssignment> availableVariables) {
+        if (_node == null)
+            throw new NullPointerException("Node is not set!");
+
         if (expression instanceof VariableReference) {
             String errors = ((VariableReference) expression).validate(expression, availableVariables, null);
             if (errors == null || errors.trim().isEmpty()) {
@@ -83,13 +90,47 @@ public class ValidatorHelper {
             var nestedNodes = node.get().getChildren();
             if (nestedNodes != null && nestedNodes.size() > 0) {
                 var lastElement = nestedNodes.get(nestedNodes.size() - 1);
-                if (lastElement instanceof VariableAssignment) {
-                    // Great we found a nested reference.. Just go down the tree and try to find the literal object.
-                    return getVariableNode((Expression) lastElement, availableVariables);
+                if (lastElement != null) {
+                    if (lastElement instanceof VariableAssignment) {
+                        // Great we found a nested reference.. Just go down the tree and try to find the literal object.
+                        return getVariableNode(((VariableAssignment) lastElement).expression, availableVariables);
+                    }
+                    return lastElement;
                 }
-                return lastElement;
             }
         }
         return null;
+    }
+
+    public ASTNode transformToLiteralNode(ASTNode expression, List<VariableAssignment> availableVariables) {
+        if (expression instanceof VariableReference) {
+            String variableName = ((VariableReference) expression).name;
+            // Make sure to validate the variable name
+            if (variableName != null && !variableName.trim().isEmpty()) {
+                // Get the top level node to drill through the nested nodes to find it literal value
+                Optional<VariableAssignment> node = availableVariables.stream()
+                        .filter(o -> o.name.name.equals(variableName)).findFirst();
+
+                if (node.isPresent()) {
+                    var nestedNodes = node.get().getChildren();
+                    if (nestedNodes != null && nestedNodes.size() > 0) {
+                        // Get the last element because that's the next property we need to evaluate.
+                        var lastElement = nestedNodes.get(nestedNodes.size() - 1);
+                        // Send it back to the method in case we're dealing with a nested VariableReference (sigh)
+                        if (lastElement != null)
+                            return transformToLiteralNode(lastElement, availableVariables);
+                    }
+                }
+            }
+        } else if (expression instanceof AddOperation) {
+            return ((AddOperation) expression).calculate(availableVariables);
+        } else if (expression instanceof MultiplyOperation) {
+            return ((MultiplyOperation) expression).calculate(availableVariables);
+        } else if (expression instanceof SubtractOperation) {
+            return ((SubtractOperation) expression).calculate(availableVariables);
+        }
+
+        // If the type is a literal just return it straight away. We don't need to do something special so.
+        return expression;
     }
 }
