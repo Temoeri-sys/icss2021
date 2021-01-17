@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class ValidatorHelper {
-
     private final ASTNode _node;
 
     public ValidatorHelper(ASTNode astNode) {

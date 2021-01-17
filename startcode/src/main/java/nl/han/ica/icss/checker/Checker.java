@@ -26,34 +26,36 @@ public class Checker {
         if (nodes == null || nodes.size() < 0)
             return;
 
-        for (ASTNode child : nodes) {
+        for (ASTNode node : nodes) {
             // Would be better if we used a interface instead of a base class. Anyway.. this will do also.
-            validateNode(child);
+            validateNode(node);
 
             // Validate also the nodes tree recursively
-            performValidationOnAST(child.getChildren());
+            performValidationOnAST(node.getChildren());
         }
     }
 
     // Most of the validation is done by the G4 regex. These are some custom business rules that we can't cover with
     // the regex patterns and need to validate the structure.
-    private void validateNode(ASTNode child) {
+    private void validateNode(ASTNode node) {
 
-        if (child instanceof VariableAssignment) {
+        if (node instanceof VariableAssignment) {
             // If we receive a VariableAssigment add it to the list of the _availableVariables. This will mark that
             // the variable is accessible within the scope. By doing so, when another type is called, we'll have a list
             // to compare with and see if it's already been defined before the actual variable is being used.
             // Whenever the variable is used BEFORE it's defined, it'll not be within this list and the specific
             // type will raise a error.
-            _availableVariables.add(((VariableAssignment) child));
-        } else if (child instanceof Declaration) {
-            ((Declaration) child).validate(_availableVariables);
-        } else if (child instanceof AddOperation) {
-            child.SetErrorIfAny(((AddOperation) child).validate(_availableVariables));
-        } else if (child instanceof SubtractOperation) {
-            child.SetErrorIfAny(((SubtractOperation) child).validate(_availableVariables));
-        } else if (child instanceof MultiplyOperation) {
-            child.SetErrorIfAny(((MultiplyOperation) child).validate(_availableVariables));
+            _availableVariables.add(((VariableAssignment) node));
+        } else if (node instanceof Declaration) {
+            ((Declaration) node).validate(_availableVariables);
+        } else if (node instanceof AddOperation) {
+            node.SetErrorIfAny(((AddOperation) node).validate(_availableVariables));
+        } else if (node instanceof SubtractOperation) {
+            node.SetErrorIfAny(((SubtractOperation) node).validate(_availableVariables));
+        } else if (node instanceof MultiplyOperation) {
+            node.SetErrorIfAny(((MultiplyOperation) node).validate(_availableVariables));
+        } else if (node instanceof IfClause) {
+            node.SetErrorIfAny(((IfClause) node).validate(_availableVariables));
         }
 
     }

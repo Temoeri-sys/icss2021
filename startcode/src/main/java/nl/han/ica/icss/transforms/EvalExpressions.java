@@ -1,29 +1,37 @@
 package nl.han.ica.icss.transforms;
 
-import nl.han.ica.datastructures.IHANLinkedList;
 import nl.han.ica.icss.ast.*;
-import nl.han.ica.icss.ast.literals.PercentageLiteral;
-import nl.han.ica.icss.ast.literals.PixelLiteral;
-import nl.han.ica.icss.ast.literals.ScalarLiteral;
-import nl.han.ica.icss.ast.operations.AddOperation;
-import nl.han.ica.icss.ast.operations.MultiplyOperation;
-import nl.han.ica.icss.ast.operations.SubtractOperation;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class EvalExpressions implements Transform {
 
-    private IHANLinkedList<HashMap<String, Literal>> variableValues;
-
     public EvalExpressions() {
-        //variableValues = new HANLinkedList<>();
     }
 
     @Override
     public void apply(AST ast) {
-        //variableValues = new HANLinkedList<>();
+        transformAstStructure(ast.root.getChildren());
     }
 
-    
+    private void transformAstStructure(ArrayList<ASTNode> nodes) {
+        // Check if nodes are actually filled before we continue the validation
+        if (nodes == null || nodes.size() <= 0)
+            return;
+
+        for (ASTNode node : nodes) {
+            // Would be better if we used a interface instead of a base class. Anyway.. this will do also.
+            transformNode(node);
+
+            // Let each node transform itself to the correct type recursively.
+            transformAstStructure(node.getChildren());
+        }
+    }
+
+    // TODO: Transform into correct data types so it'll be easier when generating the CSS.
+    private void transformNode(ASTNode node) {
+        System.out.println(String.format("Transform the current node!! %s", node));
+    }
+
+
 }

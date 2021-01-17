@@ -1,6 +1,10 @@
 package nl.han.ica.icss.ast;
 
+import nl.han.ica.icss.ast.helpers.ValidatorHelper;
+import nl.han.ica.icss.ast.literals.BoolLiteral;
+
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class IfClause extends ASTNode {
@@ -9,8 +13,11 @@ public class IfClause extends ASTNode {
     public Expression conditionalExpression;
     public ArrayList<ASTNode> body = new ArrayList<>();
     public ElseClause elseClause;
+    public ValidatorHelper _helper;
 
-    public IfClause() { }
+    public IfClause() {
+        _helper = new ValidatorHelper(this);
+    }
 
     public IfClause(Expression conditionalExpression, ArrayList<ASTNode> body) {
 
@@ -75,4 +82,15 @@ public class IfClause extends ASTNode {
         return conditionalExpression;
     }
     public ElseClause getElseClause() { return elseClause; }
+
+    public String validate(List<VariableAssignment> availableVariables) {
+        ASTNode valueNode = _helper.getLiteralNode(conditionalExpression, availableVariables);
+
+        // Only accept booleans in the IF statement.
+        if(valueNode != null && valueNode instanceof BoolLiteral){
+            return "";
+        }
+
+        return "UnsupportedTypeError: Only boolean types are accepted.";
+    }
 }

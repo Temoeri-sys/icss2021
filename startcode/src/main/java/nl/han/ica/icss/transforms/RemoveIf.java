@@ -11,7 +11,7 @@ public class RemoveIf implements Transform {
 
     @Override
     public void apply(AST ast) {
-
+        // TODO: Figure out if we actually need this... bit overkill t.b.h..
     }
     
 }
