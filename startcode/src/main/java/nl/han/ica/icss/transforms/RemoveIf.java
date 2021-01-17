@@ -44,13 +44,11 @@ public class RemoveIf implements Transform {
                             .transformToLiteralNode(ifClauseNode.getConditionalExpression(), _availableVariables);
                     if (conditionalValue instanceof BoolLiteral) {
                         if (((BoolLiteral) conditionalValue).value) {
-                            System.out.println("1");
                             // Only required when a else clause is actually used.
                             if (ifClauseNode.elseClause != null) {
                                 ifClauseNode.elseClause.body.clear();
                             }
                         } else {
-                            System.out.println("2");
                             ifClauseNode.body.clear();
                         }
                     } else {

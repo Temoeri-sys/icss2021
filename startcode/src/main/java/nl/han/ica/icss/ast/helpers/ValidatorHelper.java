@@ -32,7 +32,7 @@ public class ValidatorHelper {
         if (expression instanceof VariableReference) {
             String errors = ((VariableReference) expression).validate(expression, availableVariables, null);
             if (errors == null || errors.trim().isEmpty()) {
-                return getVariableNode(expression, availableVariables);
+                return getVariableNode((VariableReference) expression, availableVariables);
             } else {
                 // We received an error from the VariableReference validation.
                 _node.setError(errors);
@@ -80,7 +80,7 @@ public class ValidatorHelper {
         return ((SubtractOperation) expression).calculate(availableVariables);
     }
 
-    private ASTNode getVariableNode(Expression expression, List<VariableAssignment> availableVariables) {
+    private ASTNode getVariableNode(VariableReference expression, List<VariableAssignment> availableVariables) {
         // Property within scope, continue fetching it's value.
         Optional<VariableAssignment> node = availableVariables.stream()
                 .filter(o -> o.name.name.equals(((VariableReference) expression).name)).findFirst();
@@ -91,9 +91,9 @@ public class ValidatorHelper {
             if (nestedNodes != null && nestedNodes.size() > 0) {
                 var lastElement = nestedNodes.get(nestedNodes.size() - 1);
                 if (lastElement != null) {
-                    if (lastElement instanceof VariableAssignment) {
+                    if (lastElement instanceof VariableReference) {
                         // Great we found a nested reference.. Just go down the tree and try to find the literal object.
-                        return getVariableNode(((VariableAssignment) lastElement).expression, availableVariables);
+                        return getVariableNode((VariableReference) lastElement, availableVariables);
                     }
                     return lastElement;
                 }

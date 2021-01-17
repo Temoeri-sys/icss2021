@@ -92,7 +92,6 @@ public class IfClause extends ASTNode {
     public String validate(List<VariableAssignment> availableVariables) {
         ASTNode valueNode = _helper.getLiteralNode(conditionalExpression, availableVariables);
 
-        System.out.println(valueNode);
         // Only accept booleans in the IF statement.
         if (valueNode != null && valueNode instanceof BoolLiteral) {
             return "";
